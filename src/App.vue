@@ -38,10 +38,10 @@
                   </v-list-tile-title>
                 </v-list-tile-content>
               </v-list-tile>
+
               <v-list-tile
                 v-for="(child, i) in item.children"
                 :key="i"
-                @click=""
               >
                 <v-list-tile-action v-if="child.icon">
                   <v-icon>{{ child.icon }}</v-icon>
@@ -53,17 +53,23 @@
                 </v-list-tile-content>
               </v-list-tile>
             </v-list-group>
-            <v-list-tile v-else @click="" :key="item.text">
-              <v-list-tile-action>
-                <v-icon>{{ item.icon }}</v-icon>
-              </v-list-tile-action>
-              <v-list-tile-content>
-                <v-list-tile-title>
-                  {{ item.text }}
-                </v-list-tile-title>
-              </v-list-tile-content>
-            </v-list-tile>
+
+            <router-link :to="{name: item.to }" class="fms-link" v-else :key="item.text">
+              <v-list-tile>
+                <v-list-tile-action>
+                  <v-icon>{{ item.icon }}</v-icon>
+                </v-list-tile-action>
+                <v-list-tile-content>
+                  <v-list-tile-title>
+                     {{ item.text }}
+                  <!-- {{ item.text }} -->
+                  </v-list-tile-title>
+                </v-list-tile-content>
+              </v-list-tile>
+            </router-link>
+
           </template>
+
         </v-list>
       </v-navigation-drawer>
       <v-toolbar
@@ -101,117 +107,41 @@
         </v-btn>
       </v-toolbar>
       <v-content>
-        <v-container fluid fill-height>
+        <v-container>
            <router-view></router-view>
         </v-container>
       </v-content>
-      <v-btn
-        fab
-        bottom
-        right
-        color="pink"
-        dark
-        fixed
-        @click.stop="dialog = !dialog"
-      >
-        <v-icon>add</v-icon>
-      </v-btn>
-      <v-dialog v-model="dialog" width="800px">
-        <v-card>
-          <v-card-title
-            class="grey lighten-4 py-4 title"
-          >
-            Create contact
-          </v-card-title>
-          <v-container grid-list-sm class="pa-4">
-            <v-layout row wrap>
-              <v-flex xs12 align-center justify-space-between>
-                <v-layout align-center>
-                  <v-avatar size="40px" class="mr-3">
-                    <img
-                      src="//ssl.gstatic.com/s2/oz/images/sge/grey_silhouette.png"
-                      alt=""
-                    >
-                  </v-avatar>
-                  <v-text-field
-                    placeholder="Name"
-                  ></v-text-field>
-                </v-layout>
-              </v-flex>
-              <v-flex xs6>
-                <v-text-field
-                  prepend-icon="business"
-                  placeholder="Company"
-                ></v-text-field>
-              </v-flex>
-              <v-flex xs6>
-                <v-text-field
-                  placeholder="Job title"
-                ></v-text-field>
-              </v-flex>
-              <v-flex xs12>
-                <v-text-field
-                  prepend-icon="mail"
-                  placeholder="Email"
-                ></v-text-field>
-              </v-flex>
-              <v-flex xs12>
-                <v-text-field
-                  type="tel"
-                  prepend-icon="phone"
-                  placeholder="(000) 000 - 0000"
-                  mask="phone"
-                ></v-text-field>
-              </v-flex>
-              <v-flex xs12>
-                <v-text-field
-                  prepend-icon="notes"
-                  placeholder="Notes"
-                ></v-text-field>
-              </v-flex>
-            </v-layout>
-          </v-container>
-          <v-card-actions>
-            <v-btn flat color="primary">More</v-btn>
-            <v-spacer></v-spacer>
-            <v-btn flat color="primary" @click="dialog = false">Cancel</v-btn>
-            <v-btn flat @click="dialog = false">Save</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
     </v-app>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld'
-
 export default {
   name: 'App',
   data: () => ({
     dialog: false,
     drawer: null,
     items: [
-      { icon: 'equalizer', text: 'Budgets' },
-      { icon: 'attach_money', text: 'Finances' },
-      { icon: 'insert_comment', text: 'Remider' },
-      { icon: 'send', text: 'Request' },
+      { icon: 'equalizer', text: 'Budgets', to: 'Bubget' },
+      { icon: 'attach_money', text: 'Finances', to: 'Dashboard' },
+      { icon: 'insert_comment', text: 'Remider', to: 'Dashboard' },
+      { icon: 'send', text: 'Request', to: 'Dashboard' },
       {
         icon: 'keyboard_arrow_up',
         'icon-alt': 'keyboard_arrow_down',
         text: 'More',
         model: false,
         children: [
-          { text: 'Import' },
-          { text: 'Export' },
-          { text: 'Print' },
-          { text: 'Undo changes' },
-          { text: 'Other contacts' }
+          { text: 'Import', to: 'Dashboard' },
+          { text: 'Export', to: 'Dashboard' },
+          { text: 'Print', to: 'Dashboard' },
+          { text: 'Undo changes', to: 'Dashboard' },
+          { text: 'Other contacts', to: 'Dashboard' }
         ]
       },
-      { icon: 'settings', text: 'Settings' },
-      { icon: 'chat_bubble', text: 'Send feedback' },
-      { icon: 'help', text: 'Help' },
+      { icon: 'settings', text: 'Settings', to: 'Dashboard' },
+      { icon: 'chat_bubble', text: 'Send feedback', to: 'Dashboard' },
+      { icon: 'help', text: 'Help', to: 'Dashboard' }
     ]
   }),
   props: {
@@ -219,3 +149,13 @@ export default {
   }
 }
 </script>
+<style>
+  a.fms-link {
+    color: white;
+    text-decoration: none;
+    font-size: initial;
+  }
+  .v-list__tile.theme--dark:hover {
+    background: hsla(0,0%,100%,.08);
+  }
+</style>

@@ -37,6 +37,7 @@
             <v-card>
                <v-toolbar color="blue" dark>
                 <v-card-title><h4>{{ props.item.name }}</h4>
+                {{ props.item.name }}
                 </v-card-title>
                 <v-spacer></v-spacer>
                 <v-btn icon>
@@ -46,10 +47,7 @@
 
               <v-divider></v-divider>
               <v-list dense>
-                <v-list-tile>
-                  <v-list-tile-content> Amount : </v-list-tile-content>
-                  <v-list-tile-content class="align-end" > ₱ {{ props.item.amount }}</v-list-tile-content>
-                </v-list-tile>
+                <Expeneses :amount=' props.item.amount'/>
                 <v-list-tile>
                   <v-list-tile-content> Expenses : </v-list-tile-content>
                   <v-list-tile-content class="align-end">{{ props.item.expenses }}</v-list-tile-content>
@@ -97,27 +95,33 @@
 </template>
 
 <script>
+import Expeneses from "./Expeneses";
+
 export default {
+  components : {
+    Expeneses
+  },
   data: () => ({
     rowsPerPageItems: [4, 8, 12],
     pagination: {
-        rowsPerPage: 4
-      },
+      // eslint-disable-next-lint
+      rowsPexrPage : 4
+    },
     dialog: false,
     name: null,
     amount: null,
     categories: [],
     items: [
-        {
-          text: 'Dashboard',
-          disabled: false,
-          to: '/'
-        },
-        {
-          text: 'Bugets',
-          disabled: true
-        }
-      ],
+      {
+        text: 'Dashboard',
+        disabled: false,
+        to: '/'
+      },
+      {
+        text: 'Bugets',
+        disabled: true
+      }
+    ],
     itemsCategory: []
   }),
   watch: {
@@ -128,9 +132,9 @@ export default {
       this.dialog = false
       this.name = ''
       this.amount = ''
-      let countEl = 0
+      // let countEl = 0
     }
-  },
+  }
 }
 </script>
 <style lang="scss">
@@ -139,5 +143,8 @@ export default {
   }
   .v-card__title {
       padding: 0px;
+  }
+  .v-card__title.black.lighten-4.py-4.title {
+    padding-left: 20px;
   }
 </style>

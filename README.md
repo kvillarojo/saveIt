@@ -1,4 +1,4 @@
-# fms-app
+# vue-fms-v3
 
 > A Vue.js project
 

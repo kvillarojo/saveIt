@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <v-app id="inspire" dark>
+    <v-app id="inspire" white>
       <v-navigation-drawer
         fixed
         :clipped="$vuetify.breakpoint.mdAndUp"
@@ -114,7 +114,6 @@
     </v-app>
   </div>
 </template>
-
 <script>
 export default {
   name: 'App',
@@ -151,11 +150,14 @@ export default {
 </script>
 <style>
   a.fms-link {
-    color: white;
+    color: black;
     text-decoration: none;
     font-size: initial;
   }
-  .v-list__tile.theme--dark:hover {
-    background: hsla(0,0%,100%,.08);
+  .v-list__tile.theme--light:hover {
+    background: hsla(212, 80%, 42%, 0.15);
+  }
+  .fms-link.router-link-exact-active.router-link-active > div{
+    background: hsla(212, 80%, 42%, 0.15);
   }
 </style>

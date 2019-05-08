@@ -37,17 +37,15 @@
             <v-card>
                <v-toolbar color="blue" dark>
                 <v-card-title><h4>{{ props.item.name }}</h4>
-                {{ props.item.name }}
                 </v-card-title>
                 <v-spacer></v-spacer>
                 <v-btn icon>
                   <v-icon> settings </v-icon>
                 </v-btn>
               </v-toolbar>
-
               <v-divider></v-divider>
               <v-list dense>
-                <Expeneses :amount=' props.item.amount'/>
+                <Expeneses :amount='props.item.amount' v-on:setNewAmount="newAmount" :catID="props.index"/>
                 <v-list-tile>
                   <v-list-tile-content> Expenses : </v-list-tile-content>
                   <v-list-tile-content class="align-end">{{ props.item.expenses }}</v-list-tile-content>
@@ -62,9 +60,10 @@
         </template>
       </v-data-iterator>
     </v-container>
+
     <v-dialog v-model="dialog" width="500px">
       <v-card>
-        <v-card-title class="black lighten-4 py-4 title">
+        <v-card-title class="blue py-4 title">
           <v-icon> queue </v-icon> New Category
         </v-card-title>
         <v-container grid-list-sm class="pa-4">
@@ -95,20 +94,17 @@
 </template>
 
 <script>
-import Expeneses from "./Expeneses";
+import Expeneses from './Expeneses'
 
 export default {
-  components : {
-    Expeneses
-  },
   data: () => ({
     rowsPerPageItems: [4, 8, 12],
     pagination: {
-      // eslint-disable-next-lint
-      rowsPexrPage : 4
+      rowsPexrPage: 4
     },
     dialog: false,
     name: null,
+    catId: null,
     amount: null,
     categories: [],
     items: [
@@ -125,14 +121,21 @@ export default {
     itemsCategory: []
   }),
   watch: {
+    categories: function () {
+      this.dialog = false
+      this.name = ''
+      this.amount = ''
+    }
+  },
+  components: {
+    Expeneses
   },
   methods: {
     addCategory () {
       this.categories.push({name: this.name, amount: this.amount})
-      this.dialog = false
-      this.name = ''
-      this.amount = ''
-      // let countEl = 0
+    },
+    newAmount (value, ID) {
+      this.categories[ID].amount = value
     }
   }
 }
@@ -144,7 +147,8 @@ export default {
   .v-card__title {
       padding: 0px;
   }
-  .v-card__title.black.lighten-4.py-4.title {
+  .v-card__title.blue.py-4.title {
     padding-left: 20px;
+    color: white;
   }
 </style>

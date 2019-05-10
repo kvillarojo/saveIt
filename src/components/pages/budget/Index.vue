@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-breadcrumbs :items="items">
+    <v-breadcrumbs :items="pageTrail">
       <template v-slot:divider>
         <v-icon>forward</v-icon>
       </template>
@@ -14,8 +14,7 @@
       color="blue"
       dark
       fixed
-      @click.stop="dialog = !dialog"
-    >
+      @click.stop="dialog = !dialog">
       <v-icon>add</v-icon>
     </v-btn>
     <v-container fluid grid-list-md>
@@ -45,7 +44,7 @@
               </v-toolbar>
               <v-divider></v-divider>
               <v-list dense>
-                <Expeneses :amount='props.item.amount' v-on:setNewAmount="newAmount" :catID="props.index"/>
+                <Amount :amount='props.item.amount' v-on:setNewAmount="newAmount" :catID="props.index"/>
                 <v-list-tile>
                   <v-list-tile-content> Expenses : </v-list-tile-content>
                   <v-list-tile-content class="align-end">{{ props.item.expenses }}</v-list-tile-content>
@@ -69,15 +68,17 @@
         <v-container grid-list-sm class="pa-4">
           <v-layout row wrap>
             <v-flex xs12>
-              <v-text-field v-model="name"
+              <v-text-field v-model="categoryEntries.name"
                 prepend-icon="storage"
                 placeholder="Categor Name"
               ></v-text-field>
             </v-flex>
             <v-flex xs12>
-              <v-text-field v-model="amount" type="number"
+              <v-text-field v-model="categoryEntries.amount" type="number"
                 prepend-icon="monetization_on"
                 placeholder="Amount"
+                :error='isAmount'
+                :error-messages='errorMessage'
               ></v-text-field>
             </v-flex>
           </v-layout>
@@ -85,16 +86,16 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn flat color="primary" @click="dialog = false">Cancel</v-btn>
-          <v-btn flat @click="addCategory()">Save</v-btn>
+          <v-btn flat @click="addCategory()"> Save </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
-
   </div>
 </template>
 
 <script>
-import Expeneses from './Expeneses'
+import Amount from './Amount'
+import Buget from './functions.js'
 
 export default {
   data: () => ({
@@ -102,40 +103,60 @@ export default {
     pagination: {
       rowsPexrPage: 4
     },
+    amounToSpend: Buget.getbuget(),
     dialog: false,
-    name: null,
-    catId: null,
-    amount: null,
+    categoryEntries: {
+      name: '',
+      amount: ''
+    },
     categories: [],
-    items: [
-      {
-        text: 'Dashboard',
-        disabled: false,
-        to: '/'
-      },
-      {
-        text: 'Bugets',
-        disabled: true
-      }
-    ],
-    itemsCategory: []
+    pageTrail: Buget.getTrail(),
+    itemsCategory: [],
+    isAmount: false,
+    errorMessage: '',
+    isValidEntry: false
   }),
-  watch: {
-    categories: function () {
-      this.dialog = false
-      this.name = ''
-      this.amount = ''
+  computed: {
+    validatesEntries: function () {
+      // const entryList  = this.categoryEntries
+      // Object.keys(entryList).map(function (key, index) {
+      //   console.log(entryList[key])
+      // });
     }
   },
+  watch: {
+    categories: function (amount) {
+      this.dialog = false
+      this.categoryEntries.name = ''
+      this.categoryEntries.amount = ''
+    },
+    'categoryEntries.amount': function (val) {
+      if (val > this.amounToSpend) {
+        this.isAmount = true
+        this.errorMessage = 'Entered amount have exeeeded the amount allocated'
+      } else {
+        this.isAmount = false
+        this.errorMessage = ''
+      }
+    },
+
+  },
   components: {
-    Expeneses
+    Amount
   },
   methods: {
     addCategory () {
-      this.categories.push({name: this.name, amount: this.amount})
+      // this.isValidEntry = Buget.validateEntries([this.entries.name, this.entries.amount])
+      if (this.isValidEntry) {
+        this.categories.push({name: this.categoryEntries.name, amount: this.categoryEntries.amount})
+      }
+      // console.log(this.amounToSpend -= this.amount)
+      // console.log(this.isValidEntry)
     },
     newAmount (value, ID) {
       this.categories[ID].amount = value
+    },
+    showAddNewCategory () {
     }
   }
 }

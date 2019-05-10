@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-list-tile class="fms-btn">
-      <v-list-tile-content @click.stop="showModal()"> Amount : </v-list-tile-content>
+      <v-list-tile-content @click.stop="showAmoutUpdate()"> Amount : </v-list-tile-content>
       <v-list-tile-content class="align-end" > ₱ {{ amountVal }}</v-list-tile-content>
     </v-list-tile>
     <v-dialog v-model="dialog" width="500px">
@@ -31,21 +31,21 @@
   </div>
 </template>
 <script>
+import Buget from './functions.js'
 export default {
-  props: ['amount', "catID"],
+  props: ['amount', 'catID'],
   data: () => ({
     dialog: false,
     newAmount: ''
   }),
   watch: {
-    amount: function(newVal, oldVal) { //later can be used for amount limit
-      // console.log('Prop changed: ', newVal, ' | was: ', oldVal)
-      // this.$emit('setNewAmount', newVal, this.catID)
+    newAmount: function (val) {
+      console.log('asd')
     }
   },
   computed: {
-    amountVal: function(val){
-      return val.amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    amountVal: function (val) {
+      return Buget.setValWithCommas(val)
     }
   },
   methods: {
@@ -53,11 +53,11 @@ export default {
       this.$emit('setNewAmount', this.newAmount, this.catID)
       this.dialog = false
     },
-    showModal(){
+    showAmoutUpdate () {
       this.dialog = !this.dialog
       this.newAmount = this.amount
     }
-  },
+  }
 }
 </script>
 <style>

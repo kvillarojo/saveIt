@@ -15,7 +15,7 @@
               <v-text-field
                 type="number"
                 prepend-icon="attach_money"
-                placeholder="Set Amount"
+                :error-messages='errorMessage'
                 v-model="newAmount"
               ></v-text-field>
             </v-flex>
@@ -24,7 +24,7 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn flat color="primary" @click="dialog = false">Cancel</v-btn>
-          <v-btn flat  @click="getAmount()">Save</v-btn>
+          <v-btn flat @click="getAmount()">Save</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -36,11 +36,15 @@ export default {
   props: ['amount', 'catID'],
   data: () => ({
     dialog: false,
-    newAmount: ''
+    newAmount: '',
+    errorMessage: '',
+    isValidEntry: true
   }),
   watch: {
-    newAmount: function (val) {
-      console.log('asd')
+    newAmount: function (newVal, oldVal) {
+      console.log(newVal + ' ' + oldVal)
+      if (val > amount)
+        errorMessage = 'Amount exeed the current amout expected.'
     }
   },
   computed: {
@@ -50,8 +54,10 @@ export default {
   },
   methods: {
     getAmount (event) {
-      this.$emit('setNewAmount', this.newAmount, this.catID)
-      this.dialog = false
+      console.log(this.isValidEntry)
+      if (this.isValidEntry)
+        this.$emit('setNewAmount', this.newAmount, this.catID)
+        this.dialog = false
     },
     showAmoutUpdate () {
       this.dialog = !this.dialog

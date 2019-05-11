@@ -6,7 +6,7 @@
       </template>
     </v-breadcrumbs>
     <v-divider></v-divider>
-
+    <h3> Amount: {{ amounToSpend }}  </h3>
     <v-btn
       fab
       bottom
@@ -14,7 +14,7 @@
       color="blue"
       dark
       fixed
-      @click.stop="dialog = !dialog">
+      @click.stop="showAddNewCategory()">
       <v-icon>add</v-icon>
     </v-btn>
     <v-container fluid grid-list-md>
@@ -59,35 +59,37 @@
         </template>
       </v-data-iterator>
     </v-container>
-
     <v-dialog v-model="dialog" width="500px">
       <v-card>
         <v-card-title class="blue py-4 title">
           <v-icon> queue </v-icon> New Category
         </v-card-title>
-        <v-container grid-list-sm class="pa-4">
-          <v-layout row wrap>
-            <v-flex xs12>
-              <v-text-field v-model="categoryEntries.name"
-                prepend-icon="storage"
-                placeholder="Categor Name"
-              ></v-text-field>
-            </v-flex>
-            <v-flex xs12>
-              <v-text-field v-model="categoryEntries.amount" type="number"
-                prepend-icon="monetization_on"
-                placeholder="Amount"
-                :error='isAmount'
-                :error-messages='errorMessage'
-              ></v-text-field>
-            </v-flex>
-          </v-layout>
-        </v-container>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn flat color="primary" @click="dialog = false">Cancel</v-btn>
-          <v-btn flat @click="addCategory()"> Save </v-btn>
-        </v-card-actions>
+        <v-form v-model="valid" ref="form">
+          <v-container grid-list-sm class="pa-4">
+            <v-layout row wrap>
+              <v-flex xs12>
+                <v-text-field v-model="categoryEntries.name"
+                  prepend-icon="storage"
+                  placeholder="Categor Name"
+                  :rules="rules.name"
+                ></v-text-field>
+              </v-flex>
+              <v-flex xs12>
+                <v-text-field v-model="categoryEntries.amount" type="number"
+                  prepend-icon="monetization_on"
+                  placeholder="Amount"
+                  :error-messages='errorMessage'
+                  :rules="rules.amount"
+                ></v-text-field>
+              </v-flex>
+            </v-layout>
+          </v-container>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn flat color="primary" @click="clear()">Cancel</v-btn>
+            <v-btn flat @click="submit()"> Save </v-btn>
+          </v-card-actions>
+        </v-form>
       </v-card>
     </v-dialog>
   </div>
@@ -109,54 +111,56 @@ export default {
       name: '',
       amount: ''
     },
+    rules: {
+      name: [v => !!v || 'The input is required'],
+      amount: [v => !!v || 'The input is required']
+    },
     categories: [],
     pageTrail: Buget.getTrail(),
     itemsCategory: [],
     isAmount: false,
     errorMessage: '',
-    isValidEntry: false
+    isValidEntry: false,
+    valid: false
   }),
-  computed: {
-    validatesEntries: function () {
-      // const entryList  = this.categoryEntries
-      // Object.keys(entryList).map(function (key, index) {
-      //   console.log(entryList[key])
-      // });
-    }
-  },
+
+
   watch: {
     categories: function (amount) {
-      this.dialog = false
-      this.categoryEntries.name = ''
-      this.categoryEntries.amount = ''
+      this.clear()
     },
     'categoryEntries.amount': function (val) {
       if (val > this.amounToSpend) {
-        this.isAmount = true
-        this.errorMessage = 'Entered amount have exeeeded the amount allocated'
+        this.errorMessage = 'Entered amount exceed the current set amount'
+        this.isValidEntry = false
       } else {
-        this.isAmount = false
         this.errorMessage = ''
+        this.isValidEntry = true
       }
-    },
-
+    }
   },
   components: {
     Amount
   },
   methods: {
-    addCategory () {
-      // this.isValidEntry = Buget.validateEntries([this.entries.name, this.entries.amount])
-      if (this.isValidEntry) {
+    submit () {
+      const validate = this.$refs.form.validate()
+      if (validate)
+       if(this.isValidEntry)
         this.categories.push({name: this.categoryEntries.name, amount: this.categoryEntries.amount})
-      }
-      // console.log(this.amounToSpend -= this.amount)
-      // console.log(this.isValidEntry)
+        this.amounToSpend -= this.categoryEntries.amount
+    },
+    clear () {
+      this.$refs.form.reset()
+      this.dialog = false
     },
     newAmount (value, ID) {
       this.categories[ID].amount = value
+      this.amounToSpend -= value
     },
     showAddNewCategory () {
+      this.$refs.form.reset()
+      this.dialog = !this.dialog
     }
   }
 }
